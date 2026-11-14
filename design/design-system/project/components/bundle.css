@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap");
+
+/* Livre Blanc Citoyen — styles des composants, construits sur les jetons de tokens.css.
+   Préfixe lbc-. Aucune valeur de couleur ou d'espacement n'est écrite en dur. */
+
+.lbc {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 26px;
+  color: var(--encre);
+  background: var(--papier);
+  -webkit-font-smoothing: antialiased;
+}
+.lbc *, .lbc *::before, .lbc *::after { box-sizing: border-box; }
+.lbc :focus-visible { outline: var(--trait-focus) solid var(--lagune-600); outline-offset: 2px; }
+
+/* ---------- Bouton */
+.lbc-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--espace-2);
+  min-height: 44px; padding: var(--espace-3) var(--espace-5);
+  border: var(--trait-fin) solid transparent; border-radius: var(--rayon-s);
+  font: 500 15px/22px var(--font-sans); cursor: pointer; text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.lbc-btn--principal { background: var(--lagune-700); color: var(--surface); }
+.lbc-btn--principal:hover { background: var(--encre); }
+.lbc-btn--secondaire { background: var(--surface); color: var(--lagune-700); border-color: var(--trait-fort); }
+.lbc-btn--secondaire:hover { background: var(--lagune-100); }
+.lbc-btn--discret { background: transparent; color: var(--lagune-700); padding-inline: var(--espace-3); }
+.lbc-btn--discret:hover { background: var(--lagune-100); }
+.lbc-btn--danger { background: var(--surface); color: var(--alerte-600); border-color: var(--alerte-600); }
+.lbc-btn[disabled] { background: var(--surface-2); color: var(--texte-2); border-color: var(--trait); cursor: not-allowed; }
+.lbc-btn svg { width: 20px; height: 20px; flex: none; }
+
+/* ---------- Champ */
+.lbc-champ { display: grid; gap: var(--espace-2); max-width: 560px; }
+.lbc-champ__libelle { font-weight: 700; font-size: 17px; }
+.lbc-champ__aide { font-size: 13px; line-height: 18px; color: var(--texte-2); }
+.lbc-champ__saisie {
+  width: 100%; min-height: 48px; padding: var(--espace-3) var(--espace-4);
+  font: 400 17px/26px var(--font-sans); color: var(--encre);
+  background: var(--surface); border: var(--trait-fin) solid var(--trait-fort); border-radius: var(--rayon-s);
+}
+textarea.lbc-champ__saisie { min-height: 132px; resize: vertical; }
+.lbc-champ__saisie:focus-visible { border-color: var(--lagune-600); }
+.lbc-champ--erreur .lbc-champ__saisie { border-color: var(--alerte-600); border-width: 2px; }
+.lbc-champ__erreur { display: flex; gap: var(--espace-2); font-size: 15px; line-height: 22px; color: var(--alerte-600); font-weight: 500; }
+.lbc-champ__compteur { justify-self: end; font-size: 13px; color: var(--texte-2); }
+
+/* ---------- Badge */
+.lbc-badge {
+  display: inline-flex; align-items: center; gap: var(--espace-1);
+  padding: 2px 10px; border-radius: var(--rayon-pastille); border: var(--trait-fin) solid transparent;
+  font: 500 13px/18px var(--font-sans); white-space: nowrap;
+}
+.lbc-badge--nationale { background: var(--classe-nationale); color: var(--surface); }
+.lbc-badge--partagee { background: var(--surface); color: var(--classe-partagee); border-color: var(--classe-partagee); }
+.lbc-badge--specifique { background: var(--surface); color: var(--classe-specifique); border-color: var(--classe-specifique); }
+.lbc-badge--validee { background: var(--foret-100); color: var(--foret-600); }
+.lbc-badge--proposee { background: var(--surface-2); color: var(--texte-2); }
+.lbc-badge--moderation { background: var(--alerte-100); color: var(--alerte-600); }
+.lbc-badge--publiee { background: var(--ocre-100); color: var(--ocre-700); }
+
+/* ---------- Jauge de score : une barre empilée par composante, toujours avec sa légende */
+.lbc-jauge { display: grid; gap: var(--espace-2); max-width: 420px; }
+.lbc-jauge__tete { display: flex; align-items: baseline; justify-content: space-between; }
+.lbc-jauge__score { font: 500 30px/36px var(--font-serif); }
+.lbc-jauge__sur { font-size: 15px; color: var(--texte-2); }
+.lbc-jauge__barre { display: flex; height: 10px; border-radius: var(--rayon-s); overflow: hidden; background: var(--surface-2); }
+.lbc-jauge__part { height: 100%; }
+.lbc-jauge__part + .lbc-jauge__part { border-left: 2px solid var(--surface); }
+.lbc-jauge__part--v { background: var(--carto-6); }
+.lbc-jauge__part--u { background: var(--carto-4); }
+.lbc-jauge__part--e { background: var(--carto-3); }
+.lbc-jauge__part--c { background: var(--carto-2); }
+.lbc-jauge__legende { display: grid; grid-template-columns: 14px 1fr auto; gap: 4px var(--espace-2); font-size: 13px; line-height: 18px; color: var(--texte-2); align-items: center; }
+.lbc-jauge__puce { width: 10px; height: 10px; border-radius: 2px; }
+
+/* ---------- Le fil de traçabilité */
+.lbc-fil { position: relative; list-style: none; margin: 0; padding: 0 0 0 36px; max-width: 560px; }
+.lbc-fil::before { content: ""; position: absolute; left: 13px; top: 10px; bottom: 10px; width: var(--trait-fil); background: var(--ocre-500); border-radius: 2px; }
+.lbc-fil__etape { position: relative; padding: 0 0 var(--espace-5); }
+.lbc-fil__etape:last-child { padding-bottom: 0; }
+.lbc-fil__noeud { position: absolute; left: -36px; top: 4px; width: 30px; height: 18px; display: grid; place-items: center; }
+.lbc-fil__noeud i { display: block; background: var(--ocre-500); }
+.lbc-fil__noeud--contribution i { width: 8px; height: 8px; border-radius: var(--rayon-pastille); }
+.lbc-fil__noeud--preoccupation i { width: 14px; height: 14px; border-radius: var(--rayon-pastille); background: var(--papier); border: var(--trait-fil) solid var(--ocre-500); }
+.lbc-fil__noeud--livre i { width: 14px; height: 16px; border-radius: 2px; }
+.lbc-fil__noeud--priorite i { width: 18px; height: 18px; border-radius: var(--rayon-pastille); }
+.lbc-fil__noeud--engagement i { width: 18px; height: 18px; border-radius: var(--rayon-pastille); background: var(--papier); border: var(--trait-fil) double var(--ocre-500); border-width: 5px; }
+.lbc-fil__etape--a-venir .lbc-fil__noeud i { background: var(--papier); border: 2px dashed var(--trait-fort); width: 14px; height: 14px; border-radius: var(--rayon-pastille); }
+.lbc-fil--partiel::before { bottom: auto; height: var(--fil-atteint, 60%); }
+.lbc-fil__type { font-size: 13px; line-height: 18px; color: var(--ocre-700); font-weight: 500; }
+.lbc-fil__titre { font: 600 19px/26px var(--font-serif); margin: 2px 0; }
+.lbc-fil__meta { font-size: 13px; line-height: 18px; color: var(--texte-2); }
+.lbc-fil__etape--a-venir .lbc-fil__type, .lbc-fil__etape--a-venir .lbc-fil__titre { color: var(--texte-2); }
+
+/* ---------- Étapes du formulaire de contribution */
+.lbc-etapes { display: grid; gap: var(--espace-2); }
+.lbc-etapes__texte { display: flex; justify-content: space-between; font-size: 13px; line-height: 18px; color: var(--texte-2); }
+.lbc-etapes__texte b { color: var(--encre); font-weight: 700; }
+.lbc-etapes__piste { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.lbc-etapes__piste span { height: 6px; border-radius: 3px; background: var(--trait); }
+.lbc-etapes__piste span.faite { background: var(--ocre-500); }
+.lbc-etapes__piste span.courante { background: var(--lagune-700); }
+
+/* ---------- Ligne de contribution (listes publiques et suggestions) */
+.lbc-ligne { display: grid; gap: var(--espace-1); padding: var(--espace-4) 0; border-bottom: var(--trait-fin) solid var(--trait); }
+.lbc-ligne__titre { font: 600 19px/26px var(--font-serif); color: var(--encre); margin: 0; }
+.lbc-ligne__extrait { margin: 0; color: var(--encre); }
+.lbc-ligne__meta { font-size: 13px; line-height: 18px; color: var(--texte-2); }
+.lbc-ligne__pied { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espace-3); margin-top: var(--espace-2); }
+.lbc-ligne__voix { font-size: 15px; color: var(--texte-2); }
+.lbc-ligne__voix b { color: var(--encre); }
+
+/* ---------- Cartogramme en tuiles */
+.lbc-carto { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; max-width: 520px; }
+.lbc-carto__tuile {
+  aspect-ratio: 1; border-radius: var(--rayon-m); display: grid; align-content: space-between;
+  padding: 6px 8px; font: 700 13px/16px var(--font-sans); border: 0; text-align: left; cursor: pointer;
+}
+.lbc-carto__tuile small { font-weight: 400; font-size: 11px; line-height: 13px; opacity: .95; }
+.lbc-carto__tuile[data-c="1"] { background: var(--carto-1); color: var(--encre); }
+.lbc-carto__tuile[data-c="2"] { background: var(--carto-2); color: var(--encre); }
+.lbc-carto__tuile[data-c="3"] { background: var(--carto-3); color: var(--encre); }
+.lbc-carto__tuile[data-c="4"] { background: var(--carto-4); color: var(--surface); }
+.lbc-carto__tuile[data-c="5"] { background: var(--carto-5); color: var(--surface); }
+.lbc-carto__tuile[data-c="6"] { background: var(--carto-6); color: var(--surface); }
+.lbc-carto__vide { aspect-ratio: 1; }
+.lbc-carto__legende { display: flex; align-items: center; gap: var(--espace-2); margin-top: var(--espace-3); font-size: 13px; color: var(--texte-2); }
+.lbc-carto__legende span { width: 28px; height: 10px; border-radius: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lbc *, .lbc *::before, .lbc *::after { transition: none !important; animation: none !important; }
+}

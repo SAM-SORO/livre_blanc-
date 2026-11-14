@@ -1,0 +1,137 @@
+# -*- coding: utf-8 -*-
+"""Spécification du MCD (MERISE) — source unique des diagrammes et de la liste des associations.
+
+Entité : nom -> (identifiant, [propriétés])
+Association : (nom, [(entité, cardinalité, rôle facultatif)], [propriétés], règle de gestion)
+"""
+
+ENTITES = {
+    "TERRITOIRE": ("id_territoire", ["code", "libelle", "niveau", "est_utr", "est_selectionnable", "population",
+                                      "date_debut_validite", "date_fin_validite"]),
+    "SECTEUR": ("id_secteur", ["code", "libelle", "odd", "mots_cles", "actif"]),
+    "EDITION": ("id_edition", ["libelle", "annee_echeance", "phase", "date_ouverture_collecte",
+                                "date_cloture_collecte", "date_election", "parametres"]),
+    "UTILISATEUR": ("id_utilisateur", ["nom", "prenoms", "email", "sexe", "annee_naissance", "afficher_nom",
+                                        "statut", "inscrit_le"]),
+    "AFFECTATION": ("id_affectation", ["role", "date_debut", "date_fin"]),
+    "ORGANISATION": ("id_organisation", ["denomination", "type", "numero_enregistrement",
+                                          "statut_verification", "verifiee_le"]),
+    "FICHIER": ("id_fichier", ["nom_original", "type_mime", "taille_octets", "empreinte_sha256"]),
+    "CONSULTATION_TERRAIN": ("id_consultation", ["intitule", "date_consultation", "nb_participants"]),
+    "CONTRIBUTION": ("id_contribution", ["reference", "source", "titre", "constat", "proposition", "localite",
+                                          "urgence", "tranche_population", "statut", "deposee_le", "saisie_le", "version"]),
+    "VERSION_CONTRIBUTION": ("id_version", ["numero", "titre", "constat", "proposition", "urgence",
+                                             "enregistree_le"]),
+    "DECISION_MODERATION": ("id_decision", ["action", "motif", "commentaire", "decidee_le"]),
+    "PREOCCUPATION": ("id_preoccupation", ["reference", "intitule", "synthese", "propositions_retenues",
+                                            "statut", "motif_ecartement", "nb_voix", "score", "verrouillee"]),
+    "LIVRE_BLANC": ("id_livre_blanc", ["type"]),
+    "VERSION_LIVRE_BLANC": ("id_version", ["numero", "statut", "introduction", "resume_changements",
+                                            "date_validation", "contenu_fige", "empreinte_sha256", "publiee_le"]),
+    "CALCUL_CONSOLIDATION": ("id_calcul", ["lance_le", "statut", "parametres", "rapport"]),
+    "CONVERGENCE": ("id_convergence", ["reference", "intitule", "synthese", "statut", "classe_calculee", "classe",
+                                        "motif", "nb_utr", "population_couverte", "score", "cohesion"]),
+    "DECISION_ETATS_GENERAUX": ("id_decision", ["action", "motif", "details", "decidee_le"]),
+    "CANDIDAT": ("id_candidat", ["type_election", "nom_affiche", "parti", "statut"]),
+    "ENGAGEMENT": ("id_engagement", ["echeance_annee", "texte", "statut", "declare_le", "retire_le"]),
+    "SUIVI_REALISATION": ("id_suivi", ["etat", "date_etat", "description", "commentaire_candidat"]),
+    "JUSTIFICATIF": ("id_justificatif", ["type", "url", "libelle"]),
+    "NOTIFICATION": ("id_notification", ["type", "titre", "message", "creee_le", "lue_le"]),
+}
+
+# (nom, [(entité, cardinalité, rôle)], [propriétés], règle)
+ASSOCIATIONS = [
+    # --- Référentiels, comptes, organisations
+    ("APPARTENIR", [("TERRITOIRE", "0,1", "enfant"), ("TERRITOIRE", "0,n", "parent")], [], "RG-04"),
+    ("RESIDER", [("UTILISATEUR", "0,1", ""), ("TERRITOIRE", "0,n", "")], [], "RG-10"),
+    ("DETENIR", [("UTILISATEUR", "0,n", ""), ("AFFECTATION", "1,1", "")], [], "RG-13"),
+    ("PORTER_SUR", [("AFFECTATION", "0,1", ""), ("TERRITOIRE", "0,n", "UTR")], [], "D-04"),
+    ("REPRESENTER", [("UTILISATEUR", "0,1", "représentant"), ("ORGANISATION", "1,1", "")], [], "RG-14"),
+    ("SIEGER", [("ORGANISATION", "1,1", ""), ("TERRITOIRE", "0,n", "")], [], "RG-15"),
+    ("VERIFIER", [("ORGANISATION", "0,1", ""), ("UTILISATEUR", "0,n", "administrateur")], [], "RG-15"),
+    ("NOTIFIER", [("NOTIFICATION", "1,1", ""), ("UTILISATEUR", "0,n", "")], [], "F-120"),
+    # --- Collecte
+    ("DEPOSER", [("CONTRIBUTION", "0,1", ""), ("UTILISATEUR", "0,n", "auteur")], [], "RG-28"),
+    ("AU_NOM_DE", [("CONTRIBUTION", "0,1", ""), ("ORGANISATION", "0,n", "")], [], "RG-23"),
+    ("PROVENIR", [("CONTRIBUTION", "0,1", ""), ("CONSULTATION_TERRAIN", "1,n", "")], [], "RG-28"),
+    ("CONCERNER", [("CONTRIBUTION", "1,1", ""), ("TERRITOIRE", "0,n", "")], [], "RG-21"),
+    ("RELEVER", [("CONTRIBUTION", "1,1", ""), ("SECTEUR", "0,n", "")], [], "RG-21"),
+    ("COLLECTER", [("CONTRIBUTION", "1,1", ""), ("EDITION", "0,n", "")], [], "RG-20"),
+    ("HISTORISER", [("VERSION_CONTRIBUTION", "1,1", ""), ("CONTRIBUTION", "0,n", "")], [], "RG-25"),
+    ("ILLUSTRER", [("CONTRIBUTION", "0,3", ""), ("FICHIER", "0,1", "")], ["ordre"], "RG-21"),
+    ("SOUTENIR", [("UTILISATEUR", "0,n", ""), ("CONTRIBUTION", "0,n", "")], ["soutenu_le"], "RG-27"),
+    ("SIGNALER", [("UTILISATEUR", "0,n", ""), ("CONTRIBUTION", "0,n", "")],
+     ["motif", "commentaire", "signale_le", "traite"], "RG-40"),
+    ("VISER", [("DECISION_MODERATION", "1,1", ""), ("CONTRIBUTION", "0,n", "")], [], "RG-41"),
+    ("MODERER", [("DECISION_MODERATION", "1,1", ""), ("UTILISATEUR", "0,n", "administrateur")], [], "RG-44"),
+    ("ORGANISER", [("CONSULTATION_TERRAIN", "1,1", ""), ("EDITION", "0,n", "")], [], "RG-28"),
+    ("SE_TENIR", [("CONSULTATION_TERRAIN", "1,1", ""), ("TERRITOIRE", "0,n", "lieu")], [], "RG-28"),
+    ("IMPORTER", [("CONSULTATION_TERRAIN", "1,1", ""), ("UTILISATEUR", "0,n", "administrateur")], [], "F-35"),
+    # --- Analyse régionale
+    ("RATTACHER", [("CONTRIBUTION", "0,1", ""), ("PREOCCUPATION", "0,n", "")],
+     ["mode_rattachement", "similarite_rattachement"], "RG-24"),
+    ("LOCALISER", [("PREOCCUPATION", "1,1", ""), ("TERRITOIRE", "0,n", "UTR")], [], "RG-50"),
+    ("CLASSER", [("PREOCCUPATION", "1,1", ""), ("SECTEUR", "0,n", "")], [], "RG-50"),
+    ("RELEVER_DE", [("PREOCCUPATION", "1,1", ""), ("EDITION", "0,n", "")], [], "RG-50"),
+    ("FUSIONNER", [("PREOCCUPATION", "0,1", "absorbée"), ("PREOCCUPATION", "0,n", "cible")], [], "RG-43"),
+    # --- Livres blancs et consolidation
+    ("PRODUIRE", [("LIVRE_BLANC", "1,1", ""), ("EDITION", "0,n", "")], [], "§5"),
+    ("COUVRIR", [("LIVRE_BLANC", "0,1", ""), ("TERRITOIRE", "0,n", "UTR")], [], "D-06"),
+    ("DECLINER", [("VERSION_LIVRE_BLANC", "1,1", ""), ("LIVRE_BLANC", "1,n", "")], [], "RG-54"),
+    ("ATTESTER", [("VERSION_LIVRE_BLANC", "0,1", ""), ("FICHIER", "0,1", "procès-verbal")], [], "RG-55"),
+    ("INCLURE_PREOCCUPATION", [("VERSION_LIVRE_BLANC", "0,n", ""), ("PREOCCUPATION", "0,n", "")],
+     ["rang", "intitule_fige", "score_fige", "nb_voix_fige"], "RG-54"),
+    ("INCLURE_CONVERGENCE", [("VERSION_LIVRE_BLANC", "0,n", ""), ("CONVERGENCE", "0,n", "")],
+     ["rang", "classe_figee", "intitule_fige", "score_fige"], "RG-65"),
+    ("LANCER", [("CALCUL_CONSOLIDATION", "1,1", ""), ("EDITION", "0,n", "")], [], "F-71"),
+    ("PROPOSER", [("CONVERGENCE", "0,1", ""), ("CALCUL_CONSOLIDATION", "0,n", "")], [], "§10.4"),
+    ("CONVERGER", [("PREOCCUPATION", "0,1", ""), ("CONVERGENCE", "0,n", "")], [], "RG-62"),
+    ("THEMATISER", [("CONVERGENCE", "1,1", ""), ("SECTEUR", "0,n", "")], [], "§10.4"),
+    ("ABSORBER", [("CONVERGENCE", "0,1", "absorbée"), ("CONVERGENCE", "0,n", "cible")], [], "RG-63"),
+    ("ARBITRER", [("DECISION_ETATS_GENERAUX", "1,1", ""), ("CONVERGENCE", "0,n", "")], [], "RG-63"),
+    ("STATUER", [("DECISION_ETATS_GENERAUX", "1,1", ""), ("UTILISATEUR", "0,n", "administrateur")], [], "F-74"),
+    # --- Engagements et suivi
+    ("UTILISER", [("CANDIDAT", "1,1", ""), ("UTILISATEUR", "0,n", "compte")], [], "RG-70"),
+    ("SE_PRESENTER", [("CANDIDAT", "1,1", ""), ("EDITION", "0,n", "")], [], "RG-70"),
+    ("BRIGUER", [("CANDIDAT", "0,1", ""), ("TERRITOIRE", "0,n", "UTR")], [], "RG-70"),
+    ("PRENDRE", [("ENGAGEMENT", "1,1", ""), ("CANDIDAT", "0,n", "")], [], "RG-72"),
+    ("CIBLER_PRIORITE", [("ENGAGEMENT", "0,1", ""), ("CONVERGENCE", "0,n", "")], [], "RG-71"),
+    ("CIBLER_PREOCCUPATION", [("ENGAGEMENT", "0,1", ""), ("PREOCCUPATION", "0,n", "")], [], "RG-71"),
+    ("SUIVRE", [("SUIVI_REALISATION", "1,1", ""), ("ENGAGEMENT", "0,n", "")], [], "RG-74"),
+    ("SAISIR", [("SUIVI_REALISATION", "1,1", ""), ("UTILISATEUR", "0,n", "administrateur")], [], "RG-74"),
+    ("JUSTIFIER", [("JUSTIFICATIF", "1,1", ""), ("SUIVI_REALISATION", "1,n", "")], [], "RG-74"),
+    ("JOINDRE", [("JUSTIFICATIF", "0,1", ""), ("FICHIER", "0,1", "")], [], "RG-74"),
+]
+
+# Vues du MCD (un diagramme par domaine). Les entités « rappel » sont dessinées réduites à leur identifiant.
+VUES = {
+    "mcd_1_acteurs": {
+        "titre": "MCD — vue 1 : référentiels, comptes et organisations",
+        "entites": ["TERRITOIRE", "UTILISATEUR", "AFFECTATION", "ORGANISATION", "NOTIFICATION", "SECTEUR", "FICHIER"],
+        "rappels": [],
+        "associations": ["APPARTENIR", "RESIDER", "DETENIR", "PORTER_SUR", "REPRESENTER", "SIEGER", "VERIFIER", "NOTIFIER"],
+    },
+    "mcd_2_collecte": {
+        "titre": "MCD — vue 2 : collecte et analyse régionale",
+        "entites": ["EDITION", "CONTRIBUTION", "VERSION_CONTRIBUTION", "CONSULTATION_TERRAIN", "DECISION_MODERATION",
+                    "PREOCCUPATION"],
+        "rappels": ["UTILISATEUR", "ORGANISATION", "TERRITOIRE", "SECTEUR", "FICHIER"],
+        "associations": ["DEPOSER", "AU_NOM_DE", "PROVENIR", "CONCERNER", "RELEVER", "COLLECTER", "HISTORISER",
+                         "ILLUSTRER", "SOUTENIR", "SIGNALER", "VISER", "MODERER", "ORGANISER", "SE_TENIR", "IMPORTER",
+                         "RATTACHER", "LOCALISER", "CLASSER", "RELEVER_DE", "FUSIONNER"],
+    },
+    "mcd_3_livres_blancs": {
+        "titre": "MCD — vue 3 : livres blancs et consolidation nationale",
+        "entites": ["LIVRE_BLANC", "VERSION_LIVRE_BLANC", "CALCUL_CONSOLIDATION", "CONVERGENCE", "DECISION_ETATS_GENERAUX"],
+        "rappels": ["EDITION", "TERRITOIRE", "PREOCCUPATION", "SECTEUR", "UTILISATEUR", "FICHIER"],
+        "associations": ["PRODUIRE", "COUVRIR", "DECLINER", "ATTESTER", "INCLURE_PREOCCUPATION", "INCLURE_CONVERGENCE",
+                         "LANCER", "PROPOSER", "CONVERGER", "THEMATISER", "ABSORBER", "ARBITRER", "STATUER"],
+    },
+    "mcd_4_engagements": {
+        "titre": "MCD — vue 4 : candidats, engagements et suivi",
+        "entites": ["CANDIDAT", "ENGAGEMENT", "SUIVI_REALISATION", "JUSTIFICATIF"],
+        "rappels": ["UTILISATEUR", "EDITION", "TERRITOIRE", "CONVERGENCE", "PREOCCUPATION", "FICHIER"],
+        "associations": ["UTILISER", "SE_PRESENTER", "BRIGUER", "PRENDRE", "CIBLER_PRIORITE", "CIBLER_PREOCCUPATION",
+                         "SUIVRE", "SAISIR", "JUSTIFIER", "JOINDRE"],
+    },
+}

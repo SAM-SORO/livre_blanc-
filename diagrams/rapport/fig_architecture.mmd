@@ -1,0 +1,23 @@
+%%{init: {"themeVariables": {"fontSize": "18px", "fontFamily": "Liberation Sans"}, "flowchart": {"nodeSpacing": 30, "rankSpacing": 45}}}%%
+flowchart TB
+  NAV["Navigateur de l'utilisateur<br/>(smartphone ou ordinateur)"]
+  subgraph Hote["Machine hôte — Docker Compose"]
+    direction TB
+    subgraph APP["Conteneur app — Nuxt 4 sur Node.js"]
+      direction LR
+      VUE["Interface Vue<br/>(rendu serveur)"] --- API["API REST<br/>/api/v1"] --- MOD["Modules<br/>métier"]
+    end
+    subgraph WRK["Conteneur worker — même code"]
+      direction LR
+      JOBS["Tâches de fond<br/>(pg-boss)"] --- PW["Chromium<br/>(PDF)"]
+    end
+    PG[("PostgreSQL 18<br/>données + file de tâches")]
+    FS[["Volume de fichiers<br/>photos, PV, exports"]]
+    MAIL["Mailpit<br/>(e-mails de test)"]
+  end
+  NAV -- "HTTP, cookie de session" --> APP
+  APP -- "SQL" --> PG
+  WRK -- "SQL" --> PG
+  APP --> FS
+  WRK --> FS
+  WRK -- "SMTP" --> MAIL

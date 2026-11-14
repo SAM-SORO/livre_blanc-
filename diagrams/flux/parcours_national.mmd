@@ -1,0 +1,25 @@
+flowchart TD
+  A(["M. Diabaté"]) --> PREP["Préparer l'édition<br/>référentiels · secteurs · paramètres · comptes"]
+  PREP --> T1["Transition → COLLECTE"]
+  T1 --> SUIV["Suivre la participation<br/>alertes de sous-représentation"]
+  SUIV --> T2["Transition → CONSOLIDATION_REGIONALE"]
+  T2 --> AV["Avancement des 33 LBR"]
+  AV --> Q{"≥ 80 % des LBR publiés ?<br/>(RG-61)"}
+  Q -- non --> AV
+  Q -- oui --> T3["Transition → ETATS_GENERAUX"]
+  T3 --> CALC["Lancer le calcul des convergences<br/>(tâche de fond, rapport)"]
+  CALC --> MAT["Matrice secteurs × UTR"]
+  CALC --> LIST["Liste des convergences<br/>par classe · « à vérifier »"]
+  LIST --> ARB["Écran d'arbitrage<br/>sources par UTR · carte · score · cohésion"]
+  ARB --> DEC{"Décision"}
+  DEC -- "retenir / reclasser" --> R["RETENUE"]
+  DEC -- "fusionner / rejeter (motif)" --> X["FUSIONNEE / REJETEE"]
+  DEC -- "scinder" --> S["Nouvelles convergences"] --> LIST
+  R --> LBN
+  X --> LBN
+  LBN["LBN (brouillon) · préambule"] --> CT{"Toutes les convergences<br/>arbitrées ? (RG-63)"}
+  CT -- non --> LIST
+  CT -- oui --> PUB["Publier le LBN"] --> T4["Transition → ENGAGEMENTS"]
+  T4 --> CAND["Créer les candidats<br/>(invitations)"]
+  CAND --> ELEC["Saisir la date de l'élection<br/>→ SUIVI ; marquer les élus"]
+  ELEC --> SR["Renseigner le suivi des engagements<br/>état · date · justificatif"]

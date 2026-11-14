@@ -1,0 +1,33 @@
+sequenceDiagram
+  autonumber
+  actor C as Contributeur
+  participant UI as Interface (formulaire F-30)
+  participant API as API /api/v1
+  participant SVC as Service contributions
+  participant ENG as Moteur d'analyse
+  participant DB as PostgreSQL
+  participant Q as File pg-boss
+  C->>UI: Saisit lieu, secteur, constat, proposition
+  UI->>API: POST /contributions/similaires (texte provisoire)
+  API->>ENG: rechercherProches(UTR, secteur, texte)
+  ENG->>DB: pré-filtre lexèmes (index GIN) puis similarite_textes()
+  DB-->>ENG: candidates ≥ 0,20 (5 au plus)
+  ENG-->>UI: contributions proches
+  alt Le contributeur soutient une contribution existante
+    UI->>API: POST /contributions/{id}/soutiens
+  else Il publie sa contribution
+    UI->>API: POST /contributions
+    API->>SVC: déposer(acteur, données validées par Zod)
+    SVC->>DB: BEGIN, verrou consultatif (édition, UTR, secteur)
+    SVC->>ENG: meilleurePreoccupation(contribution)
+    ENG->>DB: similarité avec les préoccupations de l'UTR et du secteur
+    alt similarité ≥ 0,30
+      ENG-->>SVC: rattachement AUTO à la préoccupation P
+    else
+      ENG-->>SVC: nouvelle préoccupation PROPOSEE
+    end
+    SVC->>DB: INSERT contribution (déclencheurs RG-20 à RG-24), journal
+    SVC->>DB: COMMIT
+    SVC->>Q: scores.recalculer_utr (regroupé, 30 s)
+    API-->>UI: 201 + référence + préoccupation
+  end

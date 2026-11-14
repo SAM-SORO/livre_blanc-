@@ -1,0 +1,13 @@
+flowchart LR
+  A["Données publiées<br/>(préoccupations, convergences,<br/>statistiques, paramètres)"] --> B["Constructeur<br/>DocumentModel (JSON)"]
+  B --> C{"Publication ?"}
+  C -- "oui" --> D["Figement :<br/>contenu_fige + SHA-256"]
+  C -- "non (aperçu)" --> E
+  D --> E["Rendus"]
+  E --> W["Web<br/>composants Vue"]
+  E --> P["PDF<br/>route /impression + Chromium"]
+  E --> X["DOCX<br/>bibliothèque docx"]
+  B --> G["Graphiques et carte<br/>SVG (D3 côté serveur)"]
+  G -- "SVG" --> W
+  G -- "SVG" --> P
+  G -- "PNG (resvg)" --> X

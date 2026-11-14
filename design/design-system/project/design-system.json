@@ -1,0 +1,25 @@
+{
+ "v": 3,
+ "layout": "files",
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-12T22:16:43Z"
+ },
+ "title": "Livre Blanc Citoyen",
+ "namespace": "LivreBlancCitoyen",
+ "libraries": [],
+ "sections": {},
+ "groups": [],
+ "assetGroups": {},
+ "blobs": {},
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "lastChange": {
+  "by": "Claude",
+  "at": "2026-11-12T22:16:43Z",
+  "via": "claude.ai",
+  "note": "Première version du système : jetons, charte, huit composants, couverture."
+ }
+}

@@ -1,0 +1,5563 @@
+openapi: 3.1.0
+info:
+  title: Livre Blanc Citoyen — API
+  version: 1.0.0
+  description: Squelette généré depuis api/endpoints.py. Voir docs/API_SPECIFICATIONS.md pour les conventions.
+servers:
+- url: http://localhost:3000/api/v1
+tags:
+- name: M1 Comptes
+- name: M2 Référentiels et éditions
+- name: M3 Contributions
+- name: M4 Modération
+- name: M5 Analyse régionale
+- name: M6-M8 Livres blancs
+- name: M7 Consolidation et états généraux
+- name: M9 Candidats et engagements
+- name: M10 Portail public
+- name: M11 Statistiques
+- name: M13 Audit et services communs
+paths:
+  /auth/inscription:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Inscription d'une personne physique ; envoie l'e-mail de vérification
+      operationId: post_auth_inscription
+      x-acces: PUB
+      x-references: F-10, RG-10, RG-12
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inscription'
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/verification-email:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Valide l'adresse e-mail à partir du jeton reçu
+      operationId: post_auth_verification_email
+      x-acces: PUB
+      x-references: F-11
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/verification-email/renvoi:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Renvoie l'e-mail de vérification
+      operationId: post_auth_verification_email_renvoi
+      x-acces: CON
+      x-references: F-11
+      security:
+      - session: []
+      responses:
+        '202':
+          description: Tâche de fond acceptée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tache'
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/connexion:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Ouvre une session (cookie)
+      operationId: post_auth_connexion
+      x-acces: PUB
+      x-references: F-12, RG-17
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/deconnexion:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Révoque la session courante
+      operationId: post_auth_deconnexion
+      x-acces: CON
+      x-references: F-12
+      security:
+      - session: []
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/mot-de-passe/oubli:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Demande de réinitialisation ; réponse neutre
+      operationId: post_auth_mot_de_passe_oubli
+      x-acces: PUB
+      x-references: F-13
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '202':
+          description: Tâche de fond acceptée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tache'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/mot-de-passe/reinitialisation:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Nouveau mot de passe à partir du jeton ; révoque les sessions
+      operationId: post_auth_mot_de_passe_reinitialisation
+      x-acces: PUB
+      x-references: F-13
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /auth/invitation/acceptation:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Active un compte d'administration ou de candidat invité
+      operationId: post_auth_invitation_acceptation
+      x-acces: PUB
+      x-references: F-16, RG-13
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi:
+    get:
+      tags:
+      - M1 Comptes
+      summary: Profil, rôles, affectations et organisation représentée
+      operationId: get_moi
+      x-acces: CON
+      x-references: F-14
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    patch:
+      tags:
+      - M1 Comptes
+      summary: Modifie le profil et l'affichage du nom
+      operationId: patch_moi
+      x-acces: CON
+      x-references: F-14, RG-29
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    delete:
+      tags:
+      - M1 Comptes
+      summary: Supprime le compte (anonymisation) après confirmation du mot de passe
+      operationId: delete_moi
+      x-acces: CON
+      x-references: F-14, RG-16
+      security:
+      - session: []
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi/mot-de-passe:
+    put:
+      tags:
+      - M1 Comptes
+      summary: Change le mot de passe ; révoque les autres sessions
+      operationId: put_moi_mot_de_passe
+      x-acces: CON
+      x-references: F-14, NF-11
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi/export:
+    get:
+      tags:
+      - M1 Comptes
+      summary: Export JSON des données du compte
+      operationId: get_moi_export
+      x-acces: CON
+      x-references: F-14, NF-22
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi/contributions:
+    get:
+      tags:
+      - M1 Comptes
+      summary: 'Mes contributions : statut, préoccupation, soutiens, historique'
+      operationId: get_moi_contributions
+      x-acces: CON
+      x-references: F-34
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi/notifications:
+    get:
+      tags:
+      - M1 Comptes
+      summary: Notifications, non lues en premier
+      operationId: get_moi_notifications
+      x-acces: CON
+      x-references: F-120
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi/notifications/lues:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Marque des notifications (ou toutes) comme lues
+      operationId: post_moi_notifications_lues
+      x-acces: CON
+      x-references: F-120
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /moi/preferences-notification:
+    patch:
+      tags:
+      - M1 Comptes
+      summary: Préférences d'envoi par e-mail
+      operationId: patch_moi_preferences_notification
+      x-acces: CON
+      x-references: F-121
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /organisations:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Crée une organisation dont l'utilisateur devient le représentant
+      operationId: post_organisations
+      x-acces: CV
+      x-references: F-15, RG-14
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /organisations/{id}:
+    get:
+      tags:
+      - M1 Comptes
+      summary: Fiche publique d'une organisation
+      operationId: get_organisations_id
+      x-acces: PUB
+      x-references: F-15
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    patch:
+      tags:
+      - M1 Comptes
+      summary: Modifie la fiche (repasse en NON_VERIFIEE si la dénomination change)
+      operationId: patch_organisations_id
+      x-acces: REP
+      x-references: F-15, RG-15
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/organisations:
+    get:
+      tags:
+      - M1 Comptes
+      summary: Organisations à vérifier dans le périmètre
+      operationId: get_admin_organisations
+      x-acces: AR, AN
+      x-references: RG-15
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/organisations/{id}/verification:
+    post:
+      tags:
+      - M1 Comptes
+      summary: Vérifie ou rejette (motif) une organisation
+      operationId: post_admin_organisations_id_verification
+      x-acces: AR, AN
+      x-references: RG-15
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /territoires:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Recherche dans le référentiel (niveau, parent, sélectionnable, texte)
+      operationId: get_territoires
+      x-acces: PUB
+      x-references: F-20
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /territoires/{id}:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Un territoire et ses ascendants
+      operationId: get_territoires_id
+      x-acces: PUB
+      x-references: F-20
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /secteurs:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Secteurs actifs (tous pour l'administrateur national)
+      operationId: get_secteurs
+      x-acces: PUB
+      x-references: F-21
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /editions:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Éditions (active et archivées)
+      operationId: get_editions
+      x-acces: PUB
+      x-references: F-106
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /editions/active:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Édition active, phase et dates
+      operationId: get_editions_active
+      x-acces: PUB
+      x-references: §8.1
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/territoires/import:
+    post:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Import CSV du référentiel ; rapport ligne par ligne
+      operationId: post_admin_territoires_import
+      x-acces: AN
+      x-references: F-20, D-07, RG-04, RG-05
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/secteurs:
+    post:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Crée un secteur
+      operationId: post_admin_secteurs
+      x-acces: AN
+      x-references: F-21
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/secteurs/{id}:
+    patch:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Modifie ou désactive un secteur
+      operationId: patch_admin_secteurs_id
+      x-acces: AN
+      x-references: F-21, RG-06
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions:
+    post:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Crée une édition (phase PREPARATION)
+      operationId: post_admin_editions
+      x-acces: AN
+      x-references: F-22
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}:
+    patch:
+      tags:
+      - M2 Référentiels et éditions
+      summary: 'Modifie dates et paramètres (paramètres : PREPARATION seulement)'
+      operationId: patch_admin_editions_id
+      x-acces: AN
+      x-references: F-22, RG-02
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/transition:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Phase suivante possible, préconditions et effets
+      operationId: get_admin_editions_id_transition
+      x-acces: AN
+      x-references: F-23, RG-03, RG-61
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    post:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Change de phase après confirmation
+      operationId: post_admin_editions_id_transition
+      x-acces: AN
+      x-references: F-23, RG-01, RG-03, RG-61
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/comptes:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Comptes d'administration et de candidat
+      operationId: get_admin_comptes
+      x-acces: AN
+      x-references: F-16
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    post:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Crée un compte d'administration et envoie l'invitation
+      operationId: post_admin_comptes
+      x-acces: AN
+      x-references: F-16, RG-13
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/comptes/{id}:
+    patch:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Suspend ou réactive un compte
+      operationId: patch_admin_comptes_id
+      x-acces: AN
+      x-references: F-16
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/comptes/{id}/affectations:
+    post:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Ajoute une affectation (rôle, UTR)
+      operationId: post_admin_comptes_id_affectations
+      x-acces: AN
+      x-references: D-04
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/comptes/{id}/affectations/{idAffectation}:
+    delete:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Clôt une affectation (date de fin)
+      operationId: delete_admin_comptes_id_affectations_idAffectation
+      x-acces: AN
+      x-references: D-04
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: idAffectation
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/termes-interdits:
+    get:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Liste du filtre de modération
+      operationId: get_admin_termes_interdits
+      x-acces: AN
+      x-references: F-24
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    put:
+      tags:
+      - M2 Référentiels et éditions
+      summary: Remplace la liste
+      operationId: put_admin_termes_interdits
+      x-acces: AN
+      x-references: F-24, RG-40
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions:
+    get:
+      tags:
+      - M3 Contributions
+      summary: Contributions publiées, filtrables (édition, UTR, secteur, lieu, texte, période)
+      operationId: get_contributions
+      x-acces: PUB
+      x-references: F-104, RG-29
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    post:
+      tags:
+      - M3 Contributions
+      summary: Dépose une contribution ; rattachement automatique ; idempotent avec idClient (version mobile)
+      operationId: post_contributions
+      x-acces: CV
+      x-references: F-30, F-33, F-38, RG-20 à RG-24, RG-26, RG-30
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributionCreation'
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionCreee'
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{reference}:
+    get:
+      tags:
+      - M3 Contributions
+      summary: Une contribution publiée et sa préoccupation
+      operationId: get_contributions_reference
+      x-acces: PUB
+      x-references: F-103, RG-29
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/similaires:
+    post:
+      tags:
+      - M3 Contributions
+      summary: Contributions proches d'un texte en cours de saisie
+      operationId: post_contributions_similaires
+      x-acces: CV
+      x-references: F-32, §10.1
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TexteContribution'
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/suggestion-secteur:
+    post:
+      tags:
+      - M3 Contributions
+      summary: Secteurs probables d'après les mots-clés du texte
+      operationId: post_contributions_suggestion_secteur
+      x-acces: CV
+      x-references: F-31
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TexteContribution'
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}:
+    patch:
+      tags:
+      - M3 Contributions
+      summary: Modifie sa contribution (historisée, nouveau rattachement si besoin)
+      operationId: patch_contributions_id
+      x-acces: AUT
+      x-references: RG-25
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}/retrait:
+    post:
+      tags:
+      - M3 Contributions
+      summary: Retire sa contribution
+      operationId: post_contributions_id_retrait
+      x-acces: AUT
+      x-references: RG-25
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}/versions:
+    get:
+      tags:
+      - M3 Contributions
+      summary: Historique des versions
+      operationId: get_contributions_id_versions
+      x-acces: AUT, AR, AN
+      x-references: RG-25
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}/illustrations:
+    post:
+      tags:
+      - M3 Contributions
+      summary: Ajoute une photo (3 au plus)
+      operationId: post_contributions_id_illustrations
+      x-acces: AUT
+      x-references: RG-21, NF-14
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}/illustrations/{idFichier}:
+    delete:
+      tags:
+      - M3 Contributions
+      summary: Retire une photo
+      operationId: delete_contributions_id_illustrations_idFichier
+      x-acces: AUT
+      x-references: RG-21
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: idFichier
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}/soutien:
+    put:
+      tags:
+      - M3 Contributions
+      summary: Soutient une contribution (idempotent)
+      operationId: put_contributions_id_soutien
+      x-acces: CV
+      x-references: F-36, RG-27
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    delete:
+      tags:
+      - M3 Contributions
+      summary: Retire son soutien
+      operationId: delete_contributions_id_soutien
+      x-acces: CV
+      x-references: F-36, RG-27
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '204':
+          description: Succès, sans contenu
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /contributions/{id}/signalements:
+    post:
+      tags:
+      - M3 Contributions
+      summary: Signale une contribution (motif obligatoire)
+      operationId: post_contributions_id_signalements
+      x-acces: CV
+      x-references: F-37, RG-40
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/consultations:
+    post:
+      tags:
+      - M3 Contributions
+      summary: Déclare une consultation de terrain et importe son fichier (tâche de fond)
+      operationId: post_admin_utr_utr_consultations
+      x-acces: AR, AN
+      x-references: F-35, RG-28, D-10
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+      responses:
+        '202':
+          description: Tâche de fond acceptée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tache'
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    get:
+      tags:
+      - M3 Contributions
+      summary: Consultations importées et rapports d'import
+      operationId: get_admin_utr_utr_consultations
+      x-acces: AR, AN
+      x-references: F-35
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /modeles/import-terrain.xlsx:
+    get:
+      tags:
+      - M3 Contributions
+      summary: Modèle de fichier d'import
+      operationId: get_modeles_import_terrain_xlsx
+      x-acces: AR, AN
+      x-references: F-35
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/moderation:
+    get:
+      tags:
+      - M4 Modération
+      summary: 'File : contributions en modération et signalées'
+      operationId: get_admin_utr_utr_moderation
+      x-acces: AR, AN
+      x-references: F-40
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/contributions/{id}/decisions:
+    post:
+      tags:
+      - M4 Modération
+      summary: Maintenir, masquer ou retirer (motif, commentaire)
+      operationId: post_admin_contributions_id_decisions
+      x-acces: AR, AN
+      x-references: F-40, F-42, RG-41, RG-44
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/doublons:
+    get:
+      tags:
+      - M4 Modération
+      summary: Paires de doublons stricts suspects
+      operationId: get_admin_utr_utr_doublons
+      x-acces: AR, AN
+      x-references: F-41, RG-42
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/preoccupations:
+    get:
+      tags:
+      - M5 Analyse régionale
+      summary: Préoccupations de l'UTR (filtres, tri par score ou voix)
+      operationId: get_admin_utr_utr_preoccupations
+      x-acces: AR, AN
+      x-references: F-50
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/preoccupations/{id}:
+    get:
+      tags:
+      - M5 Analyse régionale
+      summary: 'Fiche : textes, contributions, localités, score détaillé'
+      operationId: get_admin_preoccupations_id
+      x-acces: AR, AN
+      x-references: F-51
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    patch:
+      tags:
+      - M5 Analyse régionale
+      summary: Modifie intitulé, synthèse, propositions retenues
+      operationId: patch_admin_preoccupations_id
+      x-acces: AR, AN
+      x-references: F-51, RG-56
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '412':
+          description: Modifié entre-temps
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/preoccupations/validation:
+    post:
+      tags:
+      - M5 Analyse régionale
+      summary: Valide une ou plusieurs préoccupations
+      operationId: post_admin_preoccupations_validation
+      x-acces: AR, AN
+      x-references: F-54
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/preoccupations/{id}/ecartement:
+    post:
+      tags:
+      - M5 Analyse régionale
+      summary: Écarte une préoccupation (motif)
+      operationId: post_admin_preoccupations_id_ecartement
+      x-acces: AR, AN
+      x-references: F-54, RG-52
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/suggestions-fusion:
+    get:
+      tags:
+      - M5 Analyse régionale
+      summary: Paires de préoccupations proches
+      operationId: get_admin_utr_utr_suggestions_fusion
+      x-acces: AR, AN
+      x-references: F-52, §10.2
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/preoccupations/fusion:
+    post:
+      tags:
+      - M5 Analyse régionale
+      summary: Fusionne des préoccupations dans une cible
+      operationId: post_admin_preoccupations_fusion
+      x-acces: AR, AN
+      x-references: F-52, RG-43
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fusion'
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/preoccupations/{id}/scission:
+    post:
+      tags:
+      - M5 Analyse régionale
+      summary: Sépare des contributions dans une nouvelle préoccupation
+      operationId: post_admin_preoccupations_id_scission
+      x-acces: AR, AN
+      x-references: F-53
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/contributions/{id}/deplacement:
+    post:
+      tags:
+      - M5 Analyse régionale
+      summary: Rattache manuellement une contribution à une autre préoccupation
+      operationId: post_admin_contributions_id_deplacement
+      x-acces: AR, AN
+      x-references: F-53, RG-24, RG-56
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/tableau-de-bord:
+    get:
+      tags:
+      - M5 Analyse régionale
+      summary: Participation, profils, avancement du traitement
+      operationId: get_admin_utr_utr_tableau_de_bord
+      x-acces: AR, AN
+      x-references: F-55
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/utr/{utr}/livre-blanc:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Livre blanc régional de l'édition active et ses versions
+      operationId: get_admin_utr_utr_livre_blanc
+      x-acces: AR, AN
+      x-references: F-60
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/livre-blanc-national:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Livre blanc national et ses versions
+      operationId: get_admin_editions_id_livre_blanc_national
+      x-acces: AN
+      x-references: F-80
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/livres-blancs/{id}/versions:
+    post:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Ouvre un brouillon (nouvelle version, déverrouille)
+      operationId: post_admin_livres_blancs_id_versions
+      x-acces: AR, AN
+      x-references: F-60, F-63, RG-54, RG-56
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/livres-blancs/{id}/versions/{numero}:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: 'Brouillon : métadonnées et document calculé à partir des données vivantes'
+      operationId: get_admin_livres_blancs_id_versions_numero
+      x-acces: AR, AN
+      x-references: F-60, F-61
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    patch:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Introduction, validation régionale, résumé des changements
+      operationId: patch_admin_livres_blancs_id_versions_numero
+      x-acces: AR, AN
+      x-references: F-61, RG-55
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '412':
+          description: Modifié entre-temps
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/livres-blancs/{id}/versions/{numero}/controles:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Conditions de publication et blocages
+      operationId: get_admin_livres_blancs_id_versions_numero_controles
+      x-acces: AR, AN
+      x-references: RG-53, RG-55, RG-63, RG-65
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlesPublication'
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/livres-blancs/{id}/versions/{numero}/publication:
+    post:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Publie et fige ; lance les exports
+      operationId: post_admin_livres_blancs_id_versions_numero_publication
+      x-acces: AR, AN
+      x-references: F-62, F-80, RG-53 à RG-56, RG-65
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '412':
+          description: Modifié entre-temps
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /livres-blancs:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Livres blancs publiés (édition, type, UTR)
+      operationId: get_livres_blancs
+      x-acces: PUB
+      x-references: F-82
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /livres-blancs/{id}/versions/{numero}:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: 'Version publiée : document figé'
+      operationId: get_livres_blancs_id_versions_numero
+      x-acces: PUB
+      x-references: F-82, RG-54
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /livres-blancs/{id}/versions/{numero}/{format}:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Téléchargement PDF ou DOCX (202 si en cours de génération)
+      operationId: get_livres_blancs_id_versions_numero_format
+      x-acces: PUB
+      x-references: F-81
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: format
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /livres-blancs/{id}/comparaison:
+    get:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Différences entre deux versions publiées
+      operationId: get_livres_blancs_id_comparaison
+      x-acces: PUB
+      x-references: F-63
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/livres-blancs/{id}/versions/{numero}/exports:
+    post:
+      tags:
+      - M6-M8 Livres blancs
+      summary: Régénère les exports d'une version
+      operationId: post_admin_livres_blancs_id_versions_numero_exports
+      x-acces: AN
+      x-references: F-81
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '202':
+          description: Tâche de fond acceptée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tache'
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/avancement:
+    get:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: État des 33 LBR
+      operationId: get_admin_editions_id_avancement
+      x-acces: AN
+      x-references: F-70, RG-61
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/calculs-consolidation:
+    post:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: Lance le calcul des convergences
+      operationId: post_admin_editions_id_calculs_consolidation
+      x-acces: AN
+      x-references: F-71, §10.4
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '202':
+          description: Tâche de fond acceptée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tache'
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/calculs-consolidation/{id}:
+    get:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: État et rapport d'un calcul
+      operationId: get_admin_calculs_consolidation_id
+      x-acces: AN
+      x-references: F-71
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/matrice:
+    get:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: Matrice secteurs × UTR
+      operationId: get_admin_editions_id_matrice
+      x-acces: AN
+      x-references: F-72
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/convergences:
+    get:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: Convergences (classe, secteur, statut, à vérifier)
+      operationId: get_admin_editions_id_convergences
+      x-acces: AN
+      x-references: F-73
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/convergences/{id}:
+    get:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: 'Convergence : sources par UTR, carte, score détaillé, cohésion'
+      operationId: get_admin_convergences_id
+      x-acces: AN
+      x-references: F-73
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    patch:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: Modifie intitulé, synthèse, propositions
+      operationId: patch_admin_convergences_id
+      x-acces: AN
+      x-references: F-73
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '412':
+          description: Modifié entre-temps
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/convergences/{id}/decisions:
+    post:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: Retenir, rejeter, fusionner, scinder, reclasser, rouvrir
+      operationId: post_admin_convergences_id_decisions
+      x-acces: AN
+      x-references: F-73, F-74, RG-62 à RG-64
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionConvergence'
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/editions/{id}/decisions-etats-generaux:
+    get:
+      tags:
+      - M7 Consolidation et états généraux
+      summary: Journal des décisions (JSON ou CSV)
+      operationId: get_admin_editions_id_decisions_etats_generaux
+      x-acces: AN
+      x-references: F-74
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/candidats:
+    get:
+      tags:
+      - M9 Candidats et engagements
+      summary: Candidats de l'édition
+      operationId: get_admin_candidats
+      x-acces: AN
+      x-references: F-90
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+    post:
+      tags:
+      - M9 Candidats et engagements
+      summary: Crée un candidat et invite son compte
+      operationId: post_admin_candidats
+      x-acces: AN
+      x-references: F-90, RG-13, RG-70
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/candidats/{id}:
+    patch:
+      tags:
+      - M9 Candidats et engagements
+      summary: Modifie un candidat, marque élu ou non élu
+      operationId: patch_admin_candidats_id
+      x-acces: AN
+      x-references: F-90, RG-74
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /candidat/elements:
+    get:
+      tags:
+      - M9 Candidats et engagements
+      summary: Éléments du livre blanc applicable et engagements pris
+      operationId: get_candidat_elements
+      x-acces: CAND
+      x-references: F-91, RG-71
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /candidat/engagements:
+    post:
+      tags:
+      - M9 Candidats et engagements
+      summary: Déclare un engagement
+      operationId: post_candidat_engagements
+      x-acces: CAND
+      x-references: F-91, RG-71, RG-72
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EngagementCreation'
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /candidat/engagements/{id}/retrait:
+    post:
+      tags:
+      - M9 Candidats et engagements
+      summary: Retire un engagement avant l'élection
+      operationId: post_candidat_engagements_id_retrait
+      x-acces: CAND
+      x-references: F-91, RG-73
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /candidat/suivis/{id}/commentaire:
+    post:
+      tags:
+      - M9 Candidats et engagements
+      summary: Commente une mise à jour du suivi
+      operationId: post_candidat_suivis_id_commentaire
+      x-acces: CAND
+      x-references: F-93
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/engagements/{id}/suivis:
+    post:
+      tags:
+      - M9 Candidats et engagements
+      summary: Ajoute une mise à jour du suivi avec justificatifs
+      operationId: post_admin_engagements_id_suivis
+      x-acces: AN
+      x-references: F-93, RG-74
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuiviCreation'
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /candidats:
+    get:
+      tags:
+      - M9 Candidats et engagements
+      summary: Candidats (édition, type d'élection, UTR)
+      operationId: get_candidats
+      x-acces: PUB
+      x-references: F-92
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /candidats/{id}:
+    get:
+      tags:
+      - M9 Candidats et engagements
+      summary: Engagements d'un candidat et leur suivi
+      operationId: get_candidats_id
+      x-acces: PUB
+      x-references: F-92, F-93
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /elus/tableau-de-bord:
+    get:
+      tags:
+      - M9 Candidats et engagements
+      summary: Taux de réalisation des élus
+      operationId: get_elus_tableau_de_bord
+      x-acces: PUB
+      x-references: F-94, RG-75
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /portail/accueil:
+    get:
+      tags:
+      - M10 Portail public
+      summary: Chiffres clés de l'édition active
+      operationId: get_portail_accueil
+      x-acces: PUB
+      x-references: F-100
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /portail/carte:
+    get:
+      tags:
+      - M10 Portail public
+      summary: Indicateur par UTR pour la carte
+      operationId: get_portail_carte
+      x-acces: PUB
+      x-references: F-101
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /portail/utr/{code}:
+    get:
+      tags:
+      - M10 Portail public
+      summary: 'Page d''UTR : chiffres, préoccupations, LBR'
+      operationId: get_portail_utr_code
+      x-acces: PUB
+      x-references: F-102
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /preoccupations/{id}:
+    get:
+      tags:
+      - M10 Portail public
+      summary: 'Préoccupation validée : synthèse, contributions, engagements'
+      operationId: get_preoccupations_id
+      x-acces: PUB
+      x-references: F-102, F-103
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /priorites/{id}:
+    get:
+      tags:
+      - M10 Portail public
+      summary: 'Priorité du LBN : sources régionales et engagements'
+      operationId: get_priorites_id
+      x-acces: PUB
+      x-references: F-92, F-103
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /tracabilite/{type}/{id}:
+    get:
+      tags:
+      - M10 Portail public
+      summary: Fil de traçabilité ascendant ou descendant
+      operationId: get_tracabilite_type_id
+      x-acces: PUB
+      x-references: F-103
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /recherche:
+    get:
+      tags:
+      - M10 Portail public
+      summary: Recherche plein texte multi-objets
+      operationId: get_recherche
+      x-acces: PUB
+      x-references: F-104
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /statistiques/nationales:
+    get:
+      tags:
+      - M11 Statistiques
+      summary: Participation par UTR, secteur, période ; alertes de sous-représentation
+      operationId: get_statistiques_nationales
+      x-acces: PUB
+      x-references: F-110, NF-25
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /statistiques/representativite:
+    get:
+      tags:
+      - M11 Statistiques
+      summary: Sexe, âge, organisations, terrain
+      operationId: get_statistiques_representativite
+      x-acces: PUB
+      x-references: F-111, NF-25
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /statistiques/export.csv:
+    get:
+      tags:
+      - M11 Statistiques
+      summary: Export des agrégats
+      operationId: get_statistiques_export_csv
+      x-acces: AN
+      x-references: F-112
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /admin/audit:
+    get:
+      tags:
+      - M13 Audit et services communs
+      summary: Journal d'audit filtré (périmètre selon le rôle)
+      operationId: get_admin_audit
+      x-acces: AR, AN
+      x-references: F-131, RG-45
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /transparence/{utr}:
+    get:
+      tags:
+      - M13 Audit et services communs
+      summary: Compteurs de modération et de fusions par UTR
+      operationId: get_transparence_utr
+      x-acces: PUB
+      x-references: F-132
+      parameters:
+      - name: utr
+        in: path
+        required: true
+        schema:
+          type: string
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /fichiers:
+    post:
+      tags:
+      - M13 Audit et services communs
+      summary: Téléverse un fichier (photo, procès-verbal, justificatif)
+      operationId: post_fichiers
+      x-acces: CON
+      x-references: NF-14
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '409':
+          description: Règle de gestion ou conflit
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '422':
+          description: Validation
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /fichiers/{id}:
+    get:
+      tags:
+      - M13 Audit et services communs
+      summary: Télécharge un fichier si l'appelant y a droit
+      operationId: get_fichiers_id
+      x-acces: PUB*
+      x-references: NF-14
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - {}
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /taches/{id}:
+    get:
+      tags:
+      - M13 Audit et services communs
+      summary: État d'une tâche de fond lancée par l'appelant
+      operationId: get_taches_id
+      x-acces: CON
+      x-references: §8 TRD
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - session: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Non connecté
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '403':
+          description: Interdit ou hors périmètre
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+  /sante:
+    get:
+      tags:
+      - M13 Audit et services communs
+      summary: État de l'application et de la base
+      operationId: get_sante
+      x-acces: PUB
+      x-references: NF-41
+      security: []
+      responses:
+        '200':
+          description: Succès
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Introuvable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Probleme'
+components:
+  schemas:
+    Probleme:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      - code
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        code:
+          type: string
+        regle:
+          type: string
+          pattern: ^RG-\d+$
+        idRequete:
+          type: string
+        erreurs:
+          type: array
+          items:
+            type: object
+            properties:
+              champ:
+                type: string
+              message:
+                type: string
+    Pagination:
+      type: object
+      properties:
+        suivant:
+          type:
+          - string
+          - 'null'
+        total:
+          type: integer
+    Tache:
+      type: object
+      properties:
+        idTache:
+          type: string
+          format: uuid
+        etat:
+          enum:
+          - EN_ATTENTE
+          - EN_COURS
+          - TERMINEE
+          - ECHEC
+        suivi:
+          type: string
+    Urgence:
+      enum:
+      - FAIBLE
+      - MOYENNE
+      - ELEVEE
+      - CRITIQUE
+    TranchePopulation:
+      enum:
+      - MOINS_500
+      - DE_500_A_5000
+      - DE_5000_A_50000
+      - PLUS_50000
+      - INCONNUE
+    Inscription:
+      type: object
+      required:
+      - nom
+      - prenoms
+      - email
+      - motDePasse
+      - anneeNaissance
+      - idTerritoireResidence
+      - accepteCharte
+      - consentementDonnees
+      properties:
+        nom:
+          type: string
+          maxLength: 100
+        prenoms:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+        motDePasse:
+          type: string
+          minLength: 10
+        anneeNaissance:
+          type: integer
+        sexe:
+          enum:
+          - F
+          - M
+          - null
+        telephone:
+          type:
+          - string
+          - 'null'
+        idTerritoireResidence:
+          type: string
+          format: uuid
+        afficherNom:
+          type: boolean
+        accepteCharte:
+          const: true
+        consentementDonnees:
+          const: true
+    TexteContribution:
+      type: object
+      required:
+      - idTerritoire
+      - titre
+      - constat
+      - proposition
+      properties:
+        idTerritoire:
+          type: string
+          format: uuid
+        idSecteur:
+          type: string
+          format: uuid
+        titre:
+          type: string
+        constat:
+          type: string
+        proposition:
+          type: string
+    ContributionCreation:
+      type: object
+      required:
+      - titre
+      - constat
+      - proposition
+      - idSecteur
+      - idTerritoire
+      - urgence
+      properties:
+        titre:
+          type: string
+          minLength: 10
+          maxLength: 120
+        constat:
+          type: string
+          minLength: 30
+          maxLength: 1500
+        proposition:
+          type: string
+          minLength: 20
+          maxLength: 1500
+        idSecteur:
+          type: string
+          format: uuid
+        idTerritoire:
+          type: string
+          format: uuid
+        localite:
+          type:
+          - string
+          - 'null'
+          maxLength: 150
+        urgence:
+          $ref: '#/components/schemas/Urgence'
+        tranchePopulation:
+          anyOf:
+          - $ref: '#/components/schemas/TranchePopulation'
+          - type: 'null'
+        idOrganisation:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        idFichiersIllustration:
+          type: array
+          maxItems: 3
+          items:
+            type: string
+            format: uuid
+        idClient:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: Identifiant attribué par la version mobile (RG-30)
+        saisieLe:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date de rédaction hors connexion
+    ContributionCreee:
+      type: object
+      properties:
+        idContribution:
+          type: string
+          format: uuid
+        reference:
+          type: string
+        statut:
+          type: string
+        horsResidence:
+          type: boolean
+        enModeration:
+          type: boolean
+        preoccupation:
+          type: object
+          properties:
+            idPreoccupation:
+              type: string
+              format: uuid
+            intitule:
+              type: string
+            nouvelle:
+              type: boolean
+            similarite:
+              type:
+              - number
+              - 'null'
+    Fusion:
+      type: object
+      required:
+      - idCible
+      - idsAbsorbees
+      properties:
+        idCible:
+          type: string
+          format: uuid
+        idsAbsorbees:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+        intitule:
+          type: string
+    DecisionConvergence:
+      type: object
+      required:
+      - action
+      properties:
+        action:
+          enum:
+          - RETENIR
+          - REJETER
+          - FUSIONNER
+          - SCINDER
+          - RECLASSER
+          - REOUVRIR
+        motif:
+          type: string
+        classe:
+          enum:
+          - NATIONALE
+          - PARTAGEE
+          - SPECIFIQUE
+        idCible:
+          type: string
+          format: uuid
+        groupes:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+              format: uuid
+    EngagementCreation:
+      type: object
+      required:
+      - echeanceAnnee
+      - texte
+      properties:
+        idConvergence:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        idPreoccupation:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        echeanceAnnee:
+          type: integer
+        texte:
+          type: string
+          minLength: 20
+          maxLength: 1000
+    SuiviCreation:
+      type: object
+      required:
+      - etat
+      - dateEtat
+      - description
+      - justificatifs
+      properties:
+        etat:
+          enum:
+          - NON_DEMARRE
+          - EN_COURS
+          - REALISE
+          - PARTIELLEMENT_REALISE
+          - ABANDONNE
+        dateEtat:
+          type: string
+          format: date
+        description:
+          type: string
+        justificatifs:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+            - type
+            - libelle
+            properties:
+              type:
+                enum:
+                - LIEN
+                - FICHIER
+              url:
+                type: string
+                format: uri
+              idFichier:
+                type: string
+                format: uuid
+              libelle:
+                type: string
+    ControlesPublication:
+      type: object
+      properties:
+        publiable:
+          type: boolean
+        blocages:
+          type: array
+          items:
+            type: object
+            properties:
+              regle:
+                type: string
+              message:
+                type: string
+              lien:
+                type: string
+        avertissements:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: nuxt-session
+      description: Cookie de session scellé (nuxt-auth-utils) ; nom configurable

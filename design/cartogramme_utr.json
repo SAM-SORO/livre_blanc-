@@ -1,0 +1,266 @@
+[
+ {
+  "code": "ABJ",
+  "libelle": "Abidjan",
+  "chef_lieu": "Abidjan",
+  "district": "District autonome",
+  "col": 5,
+  "row": 5
+ },
+ {
+  "code": "YAM",
+  "libelle": "Yamoussoukro",
+  "chef_lieu": "Yamoussoukro",
+  "district": "District autonome",
+  "col": 3,
+  "row": 3
+ },
+ {
+  "code": "TON",
+  "libelle": "Tonkpi",
+  "chef_lieu": "Man",
+  "district": "Montagnes",
+  "col": 1,
+  "row": 3
+ },
+ {
+  "code": "GUE",
+  "libelle": "Guémon",
+  "chef_lieu": "Duékoué",
+  "district": "Montagnes",
+  "col": 1,
+  "row": 4
+ },
+ {
+  "code": "CAV",
+  "libelle": "Cavally",
+  "chef_lieu": "Guiglo",
+  "district": "Montagnes",
+  "col": 0,
+  "row": 4
+ },
+ {
+  "code": "SPE",
+  "libelle": "San-Pédro",
+  "chef_lieu": "San-Pédro",
+  "district": "Bas-Sassandra",
+  "col": 1,
+  "row": 6
+ },
+ {
+  "code": "NAW",
+  "libelle": "Nawa",
+  "chef_lieu": "Soubré",
+  "district": "Bas-Sassandra",
+  "col": 1,
+  "row": 5
+ },
+ {
+  "code": "GBO",
+  "libelle": "Gbôklé",
+  "chef_lieu": "Sassandra",
+  "district": "Bas-Sassandra",
+  "col": 2,
+  "row": 6
+ },
+ {
+  "code": "HSA",
+  "libelle": "Haut-Sassandra",
+  "chef_lieu": "Daloa",
+  "district": "Sassandra-Marahoué",
+  "col": 2,
+  "row": 4
+ },
+ {
+  "code": "MAR",
+  "libelle": "Marahoué",
+  "chef_lieu": "Bouaflé",
+  "district": "Sassandra-Marahoué",
+  "col": 2,
+  "row": 3
+ },
+ {
+  "code": "GBE",
+  "libelle": "Gbêkê",
+  "chef_lieu": "Bouaké",
+  "district": "Vallée du Bandama",
+  "col": 4,
+  "row": 2
+ },
+ {
+  "code": "HAM",
+  "libelle": "Hambol",
+  "chef_lieu": "Katiola",
+  "district": "Vallée du Bandama",
+  "col": 3,
+  "row": 2
+ },
+ {
+  "code": "BEL",
+  "libelle": "Bélier",
+  "chef_lieu": "Toumodi",
+  "district": "Lacs",
+  "col": 3,
+  "row": 4
+ },
+ {
+  "code": "IFF",
+  "libelle": "Iffou",
+  "chef_lieu": "Daoukro",
+  "district": "Lacs",
+  "col": 5,
+  "row": 3
+ },
+ {
+  "code": "NZI",
+  "libelle": "N'Zi",
+  "chef_lieu": "Dimbokro",
+  "district": "Lacs",
+  "col": 4,
+  "row": 4
+ },
+ {
+  "code": "MOR",
+  "libelle": "Moronou",
+  "chef_lieu": "Bongouanou",
+  "district": "Lacs",
+  "col": 4,
+  "row": 3
+ },
+ {
+  "code": "AGT",
+  "libelle": "Agnéby-Tiassa",
+  "chef_lieu": "Agboville",
+  "district": "Lagunes",
+  "col": 4,
+  "row": 5
+ },
+ {
+  "code": "GPO",
+  "libelle": "Grands-Ponts",
+  "chef_lieu": "Dabou",
+  "district": "Lagunes",
+  "col": 4,
+  "row": 6
+ },
+ {
+  "code": "LME",
+  "libelle": "La Mé",
+  "chef_lieu": "Adzopé",
+  "district": "Lagunes",
+  "col": 5,
+  "row": 4
+ },
+ {
+  "code": "SCO",
+  "libelle": "Sud-Comoé",
+  "chef_lieu": "Aboisso",
+  "district": "Comoé",
+  "col": 6,
+  "row": 5
+ },
+ {
+  "code": "IDJ",
+  "libelle": "Indénié-Djuablin",
+  "chef_lieu": "Abengourou",
+  "district": "Comoé",
+  "col": 6,
+  "row": 4
+ },
+ {
+  "code": "GON",
+  "libelle": "Gontougo",
+  "chef_lieu": "Bondoukou",
+  "district": "Zanzan",
+  "col": 6,
+  "row": 2
+ },
+ {
+  "code": "BKA",
+  "libelle": "Bounkani",
+  "chef_lieu": "Bouna",
+  "district": "Zanzan",
+  "col": 6,
+  "row": 1
+ },
+ {
+  "code": "BER",
+  "libelle": "Béré",
+  "chef_lieu": "Mankono",
+  "district": "Woroba",
+  "col": 2,
+  "row": 2
+ },
+ {
+  "code": "BAF",
+  "libelle": "Bafing",
+  "chef_lieu": "Touba",
+  "district": "Woroba",
+  "col": 0,
+  "row": 2
+ },
+ {
+  "code": "WOR",
+  "libelle": "Worodougou",
+  "chef_lieu": "Séguéla",
+  "district": "Woroba",
+  "col": 1,
+  "row": 2
+ },
+ {
+  "code": "KAB",
+  "libelle": "Kabadougou",
+  "chef_lieu": "Odienné",
+  "district": "Denguélé",
+  "col": 0,
+  "row": 1
+ },
+ {
+  "code": "FOL",
+  "libelle": "Folon",
+  "chef_lieu": "Minignan",
+  "district": "Denguélé",
+  "col": 0,
+  "row": 0
+ },
+ {
+  "code": "POR",
+  "libelle": "Poro",
+  "chef_lieu": "Korhogo",
+  "district": "Savanes",
+  "col": 3,
+  "row": 1
+ },
+ {
+  "code": "TCH",
+  "libelle": "Tchologo",
+  "chef_lieu": "Ferkessédougou",
+  "district": "Savanes",
+  "col": 3,
+  "row": 0
+ },
+ {
+  "code": "BAG",
+  "libelle": "Bagoué",
+  "chef_lieu": "Boundiali",
+  "district": "Savanes",
+  "col": 2,
+  "row": 1
+ },
+ {
+  "code": "GOH",
+  "libelle": "Gôh",
+  "chef_lieu": "Gagnoa",
+  "district": "Gôh-Djiboua",
+  "col": 2,
+  "row": 5
+ },
+ {
+  "code": "LDJ",
+  "libelle": "Lôh-Djiboua",
+  "chef_lieu": "Divo",
+  "district": "Gôh-Djiboua",
+  "col": 3,
+  "row": 5
+ }
+]

@@ -1,0 +1,44 @@
+flowchart TB
+  subgraph PUB["Portail public (sans connexion)"]
+    A["/ Accueil narratif"] --> CARTE["/carte"]
+    A --> LB["/livres-blancs"]
+    A --> ENG["/engagements · /candidats · /elus"]
+    A --> RECH["/recherche"]
+    A --> STAT["/statistiques"]
+    A --> INFO["/a-propos · /charte · /faq<br/>/donnees-personnelles"]
+    CARTE --> REG["/regions/[code]"]
+    REG --> PRE["/preoccupations/[id]"]
+    LB --> LECT["/livres-blancs/[id]/v/[n]"]
+    LECT --> PRIO["/priorites/[id]"]
+    PRIO --> PRE
+    PRE --> CONT["/contributions/[ref]"]
+    PRIO --> TRA["/tracabilite/[type]/[id]"]
+    CONT --> TRA
+  end
+  subgraph AUTH["Accès"]
+    CONN["/connexion"]
+    INSC["/inscription"]
+    MDP["/mot-de-passe/*"]
+    INV["/invitation"]
+  end
+  subgraph ESP["Espace contributeur"]
+    CONTRIB["/contribuer<br/>(7 étapes)"]
+    ESPACE["/espace<br/>contributions · notifications<br/>profil · organisation"]
+  end
+  subgraph ADM_R["Administration régionale /admin/utr/[code]"]
+    R1["tableau de bord · modération · doublons<br/>préoccupations · consultations<br/>organisations · livre blanc · audit"]
+  end
+  subgraph ADM_N["Administration nationale /admin/national"]
+    N1["tableau de bord · éditions · référentiels · comptes<br/>consolidation · convergences · livre blanc national<br/>candidats · suivi · audit"]
+  end
+  subgraph CAND["Espace candidat /candidat"]
+    C1["éléments du livre blanc · engagements · suivi"]
+  end
+  A -- "Contribuer" --> CONN
+  CONN --> CONTRIB
+  INSC --> CONN
+  CONN --> ESPACE
+  CONN --> R1
+  CONN --> N1
+  INV --> C1
+  INV --> R1

@@ -1,0 +1,23 @@
+flowchart TD
+  A(["Mme Gnahoré se connecte"]) --> TB["Tableau de bord de l'UTR<br/>compteurs de travail à faire"]
+  TB --> M["File de modération<br/>maintenir · masquer · retirer"]
+  TB --> D["Doublons stricts<br/>comparaison côte à côte"]
+  TB --> IMP["Consultations de terrain<br/>import CSV/XLSX → rapport"]
+  TB --> P["Préoccupations<br/>tri par score, filtres"]
+  P --> SF["Suggestions de fusion<br/>accepter · ignorer"]
+  P --> FI["Fiche préoccupation<br/>intitulé · synthèse · contributions · score détaillé"]
+  FI --> DEP["Déplacer / scinder<br/>des contributions"]
+  FI --> VAL{"Décision"}
+  VAL -- valider --> OKV["VALIDEE"]
+  VAL -- écarter + motif --> ECA["ECARTEE"]
+  M --> P
+  D --> P
+  IMP --> P
+  OKV --> LBR
+  ECA --> LBR
+  SF --> P
+  LBR["Livre blanc régional (brouillon)<br/>aperçu généré · introduction · validation régionale"] --> CTRL{"Contrôles de publication"}
+  CTRL -- "blocages (RG-53, RG-55)" --> LIST["Liste des blocages<br/>avec liens vers les écrans"] --> P
+  CTRL -- "publiable" --> PUBL["Publier (confirmation)"] --> FIG["Version figée<br/>exports PDF et DOCX en tâche de fond"]
+  FIG --> NOTIF["Contributeurs de l'UTR notifiés"]
+  FIG -- "correction nécessaire" --> NV["Nouvelle version<br/>(résumé des changements)"] --> LBR

@@ -1,0 +1,43 @@
+<!-- @dsCard height=288 -->
+<div class="lbc couverture">
+  <style>
+    .couverture { position: relative; width: 960px; height: 288px; overflow: hidden; background: var(--papier); }
+    .couverture svg { position: absolute; left: 480px; top: 0; width: 480px; height: 288px; }
+    .couverture .encre { fill: var(--encre); }
+    .couverture .lagune { fill: var(--lagune-700); }
+    .couverture .carto3 { fill: var(--carto-3); }
+    .couverture .carto2 { fill: var(--carto-2); }
+    .couverture .tuile { rx: var(--rayon-m); }
+    .couverture .fil { fill: none; stroke: var(--ocre-500); stroke-width: var(--trait-fil); stroke-linejoin: round; stroke-linecap: round; }
+    .couverture .noeud { fill: var(--ocre-500); }
+    .couverture .anneau { fill: none; stroke: var(--ocre-500); stroke-width: var(--trait-fil); }
+    .couverture .page { fill: var(--ocre-500); rx: 2px; }
+    .couverture .texte { position: absolute; left: 40px; bottom: 36px; max-width: 440px; }
+    .couverture h1 { margin: 0; font: 600 72px/0.95 var(--font-serif); color: var(--encre); letter-spacing: -0.5px; }
+    .couverture p { margin: 16px 0 0; font: 400 14px/20px var(--font-sans); color: var(--texte-2); }
+  </style>
+  <svg viewBox="0 0 480 288" aria-hidden="true">
+    <!-- Blocs : encre 136×136, lagune-700 136×64 et 64×64, carto-3 64×136 et 64×64, carto-2 64×64 ; tuiles de 64 px au pas de 72 (espace-2 entre elles), coins rayon-m.
+         Disposition : fragment du cartogramme en tuiles, des tuiles fusionnées comme les territoires d'un même district, une colonne qui déborde par le haut.
+         Motif : le fil, rangée « motif littéral » — un trait-fil ocre-500 qui traverse les tuiles et relie cinq nœuds (contribution, préoccupation, livre blanc, priorité, engagement), parce que la traçabilité est ce que le produit a de propre.
+         Échelles : pas 72 = 64 + espace-2 ; rayon-m pour les tuiles, rayon-pastille pour les nœuds ; trait-fil pour le fil et les anneaux. -->
+    <rect class="carto2 tuile" x="24" y="64" width="64" height="64"/>
+    <rect class="lagune tuile" x="96" y="136" width="136" height="64"/>
+    <rect class="carto3 tuile" x="168" y="208" width="64" height="64"/>
+    <rect class="encre tuile" x="240" y="64" width="136" height="136"/>
+    <rect class="lagune tuile" x="312" y="208" width="64" height="64"/>
+    <rect class="carto3 tuile" x="384" y="-8" width="64" height="136"/>
+    <polyline class="fil" points="56,96 164,168 308,132 344,240 416,60"/>
+    <circle class="noeud" cx="56" cy="96" r="5"/>
+    <circle class="anneau" cx="164" cy="168" r="8" style="fill: var(--lagune-700)"/>
+    <rect class="page" x="300" y="123" width="16" height="18"/>
+    <circle class="noeud" cx="344" cy="240" r="10"/>
+    <circle class="anneau" cx="416" cy="60" r="11" style="fill: var(--carto-3)"/>
+    <circle class="anneau" cx="416" cy="60" r="5" style="fill: var(--carto-3)"/>
+  </svg>
+  <div class="texte">
+    <h1>Livre Blanc Citoyen</h1>
+    <p>Des contributions des populations au livre blanc national.</p>
+  </div>
+</div>
+<script>document.documentElement.lang = "fr";</script>

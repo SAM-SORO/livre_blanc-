@@ -1,0 +1,31 @@
+flowchart LR
+  subgraph Poste["Poste de l'utilisateur"]
+    NAV["Navigateur<br/>(mobile ou ordinateur)"]
+  end
+  subgraph Hote["Machine hôte — Docker Compose (déploiement local)"]
+    direction LR
+    subgraph APP["Conteneur app — Nuxt 4 (Node 24)"]
+      direction TB
+      VUE["Interface Vue<br/>rendu serveur + hydratation"]
+      API["Routes serveur Nitro<br/>/api/v1"]
+      MOD["Modules métier<br/>server/modules/*"]
+      VUE --- API --- MOD
+    end
+    subgraph WRK["Conteneur worker — même image"]
+      direction TB
+      JOBS["Tâches pg-boss<br/>scores, consolidation,<br/>documents, e-mails"]
+      PW["Chromium (Playwright)<br/>PDF"]
+      JOBS --- PW
+    end
+    PG[("PostgreSQL 18<br/>données + file pg-boss")]
+    FS[["Volume fichiers<br/>photos, PV, exports"]]
+    MAIL["Mailpit<br/>SMTP de test + boîte web"]
+  end
+  NAV -- "HTTPS (local : HTTP)<br/>cookie de session scellé" --> APP
+  MOD -- "SQL (Drizzle)" --> PG
+  JOBS -- "SQL" --> PG
+  MOD -- "publie des tâches" --> PG
+  MOD --> FS
+  JOBS --> FS
+  JOBS -- "SMTP" --> MAIL
+  PW -- "imprime /impression/*" --> APP
